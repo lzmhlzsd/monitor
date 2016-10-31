@@ -1,0 +1,253 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    margin: 0px;
+    font-family: 'Helvetica Neue', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft Yahei', sans-serif;
+}
+
+div {
+    box-sizing: border-box;
+}
+
+#content {
+    width: 1366px;
+    height: 768px;
+    margin: 0 auto;
+}
+
+.title {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    top: 0px;
+    padding: 30px 20px;
+    font-size: 40px;
+    color: #fff;
+}
+
+.title .datetime {
+    font-size: 14px;
+    position: absolute;
+    top: 72px;
+    margin-left: 193px;
+}
+
+.panel-left {
+    position: absolute;
+    left: -300px;
+    top: 75px;
+    height: 600px;
+    width: 300px;
+    z-index: 999;
+}
+
+.panel-right {
+    position: absolute;
+    right: -300px;
+    top: 75px;
+    height: 600px;
+    width: 300px;
+    border: 0px solid red;
+    z-index: 999;
+}
+
+.content-body {
+    height: 300px;
+    width: 686px;
+    border: 0px solid red;
+    position: absolute;
+    top: 75px;
+    left: 340px;
+    z-index: 999;
+} 
+
+/*.amount .num { float: left }*/
+
+
+
+.panel-title {
+    color: #f09109;
+    font-size: 18px;
+    padding: 3px 8px;
+}
+
+.panel-title-sub {
+    font-size: 12px;
+    margin-top: -4px;
+}
+
+.line-1 {
+    width: 100%;
+    height: 2px;
+    background: rgb(12, 44, 208);
+    position: absolute;
+}
+
+.line-2 {
+    width: 2px;
+    height: 100%;
+    background: -webkit-linear-gradient(top, rgba(12, 44, 208, 1) 0%, rgba(100, 172, 174, 0.9) 60%, rgb(37, 238, 243) 100%);
+    position: absolute;
+}
+
+.line-3 {
+    width: 100%;
+    height: 2px;
+    background: rgb(37, 238, 243);
+    position: absolute;
+}
+
+.line-4 {
+    width: 2px;
+    height: 586px;
+    background: -webkit-linear-gradient(top, rgba(12, 44, 208, 1) 0%, rgba(100, 172, 174, 0.9) 60%, rgb(37, 238, 243) 100%);
+    position: absolute;
+    /*    top: 1px;*/
+}
+
+.line-top {
+    top: 0;
+}
+
+.line-right {
+    right: 0;
+}
+
+.line-bottom {
+    bottom: 0;
+}
+
+.line-left {
+    left: 0;
+}
+
+@keyframes nucleus_ {
+    0% {
+        box-shadow: 0 0 0 transparent;
+    }
+    100% {
+        box-shadow: 0 0 25px #ff0000;
+    }
+    /*100% {
+        box-shadow: 0 0 0 transparent;
+    }*/
+}
+
+.order {
+    position: absolute;
+    bottom: 35px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    left: 720px;
+    /* border: 1px solid #fff; */
+    /* -webkit-transform-style: preserve-3d; */
+    -webkit-transform: rotateX(80deg) rotateY(20deg);
+    transform-style: preserve-3d;
+    transform: rotateX(80deg) rotateY(20deg);
+}
+
+.order:after {
+    content: "";
+    position: absolute;
+    height: 8px;
+    width: 8px;
+    background: #fff;
+    border-radius: 50%;
+    -webkit-transform: rotateX(-80deg) rotateY(0);
+    transform: rotateX(-80deg) rotateY(0);
+    box-shadow: 0 0 25px #ff0000;
+    /* -webkit-animation: nucleus_ 1s infinite linear;
+    animation: nucleus_ 1s infinite linear;*/
+    left: 50%;
+    top: 50%;
+    margin-top: -20px;
+    margin-left: -20px;
+}
+
+#bak-big {
+    animation: fadeInFromNone 5s infinite linear;
+}
+
+@keyframes fadeInFromNone {
+    0% {
+        display: block;
+        opacity: 0.1;
+    }
+    30% {
+        display: block;
+        opacity: 0;
+    }
+    60% {
+        display: block;
+        opacity: 0.6;
+    }
+    80% {
+        display: block;
+        opacity: 0.5;
+    }
+    100% {
+        display: block;
+        opacity: 0.1;
+    }
+}
+
+.order-point {
+    position: absolute;
+    bottom: 80px;
+    left: 800px;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    border: 1px solid #fff;
+    background-color: #fff;
+}
+
+.order-point:after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: -2px;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    /*border: 1px solid #fff;*/
+    box-shadow: 0 0 25px #fff;
+    animation: fadeInFromNone1 5s infinite linear;
+}
+
+@keyframes fadeInFromNone1 {
+    0% {
+        box-shadow: 0 0 25px transparent;
+    }
+    50% {
+        box-shadow: 0 0 25px #fff;
+    }
+    100% {
+        box-shadow: 0 0 25px transparent;
+    }
+}
+
+/*.businesses li {
+    line-height: 26px;
+    font-size: 14px;
+    padding: 0px;
+    height: 26px
+}
+.businesses .count,.businesses .amounts{
+	float: right;
+	margin-right: 13px;
+}*/
+
+.type-list li {
+    line-height: 30px;
+    font-size: 14px;
+    padding: 0px;
+}
+.businesses li span:nth-child(3) {
+    display: inline-block;
+    min-width: 60px;
+    text-align: right;
+}

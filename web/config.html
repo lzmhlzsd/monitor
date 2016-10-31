@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        background-color: #000000;
+        color: #fff;
+    }
+    
+    .form label,
+    input,
+    .btn {
+        font-size: 14px;
+        display: inline-block;
+        height: 26px;
+    }
+    
+    .form label {
+        width: 200px;
+        text-align: right;
+    }
+    
+    .form input {
+        border: 1px solid #cdcdcd;
+        border-radius: 5px;
+        width: 200px;
+        padding: 2px 8px;
+        color: #595959;
+    }
+    
+    .form input:focus {
+        border: 1px solid #cdcdcd !important;
+        outline: 0;
+    }
+    
+    .row {
+        margin: 15px 0;
+    }
+    
+    .btn {
+        padding: 2px 12px;
+        border-radius: 5px;
+        background-color: #167cfb;
+        line-height: 27px;
+        cursor: pointer;
+    }
+    .btn.start {
+        background-color: #239016;
+    }
+    .btn.stop { 
+        background-color: red;
+    }
+    
+    .btn:hover {
+        background-color: #5198f1;
+    }
+    
+    .btn:active {
+        background-color: #f1d15f;
+        color: #434845;
+    }
+    .status{
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        border: 1px solid #cdcdcd;
+        display: inline-block;
+    }
+    .status.start{
+        background-color: #31ca1e;
+        border-color: #31ca1e;
+    }
+    .status.stop{
+        background-color: #b7bdb7;
+        border-color: #b7bdb7;
+    }
+    </style>
+</head>
+
+<body class="">
+    <div style="width: 600px;margin: 10% auto; border: 1px solid #fff;padding: 10px;" class="form">
+        <div style="font-size: 20px;text-align: center;padding:20px;">大屏控制台</div>
+        <div class="row">
+            <label>当前真实交易额：</label>
+            <input id="reallyAmount" type="text" value="1000"><div id="getAmount" class="btn" style="margin-left: 10px;">获取交易额</div>
+        </div>
+        <div class="row">
+            <label>目标倍率：</label>
+            <input id="coefficient" type="text" value="1">
+        </div>
+        <div class="row">
+            <label>大屏显示交易额：</label>
+            <input id="screenAmount" type="text" readonly style="background-color: #cecece;">
+        </div>
+        <div class="row">
+            <label>交易差额：</label>
+            <input id="diffAmount" type="text" readonly style="background-color: #cecece;">
+        </div>
+        <div class="row">
+            <label>动作时间(秒)：</label>
+            <input id="extecttime" type="text" value="10">
+        </div>
+        <div class="row">
+            <label></label>
+            <span class="display: inline-block;">
+                <div id="save" class="btn">执行</div>
+            </span>
+        </div>
+        <hr style="border-bottom: 0px;border-style: dashed;">
+        <div class="row" style="line-height: 27px;">
+            <label>大屏状态：</label>
+            <div class="status"></div>
+        </div>
+        <div class="row">
+            <label>大屏开始时间：</label>
+            <input id="starttime" type="text">
+        </div>  
+        <div class="row">
+            <label></label>
+            <span class="display: inline-block;">
+                <div id="restart" class="btn">大屏重启</div>
+            </span>
+            <span class="display: inline-block;" style="margin-left: 10px;">
+                <div id="stop" class="btn stop">大屏停止</div>
+            </span>
+            <span class="display: inline-block;" style="margin-left: 10px;">
+                <div id="start" class="btn start">大屏启动</div>
+            </span>
+        </div>
+    </div>
+</body>
+<script src="./js/jquery.min.js"></script>
+<script>
+$('#coefficient').on('blur', function() {
+    $('#screenAmount').val(parseFloat($('#coefficient').val()) * parseFloat($('#reallyAmount').val()))
+    $('#diffAmount').val(parseFloat($('#screenAmount').val()) - parseFloat($('#reallyAmount').val()))
+})
+
+$('#getAmount').on('click', function(){
+
+})
+$('#start').on('click', function() {
+    $.post('/start', function(result) {
+        if(result.screen_status){
+            $('.status').removeClass('start').addClass('stop');
+        }
+        else{
+            $('.status').removeClass('stop').addClass('start');
+        }
+    })
+});
+$('#stop').on('click', function() {
+    $.post('/stop', function(result) {
+        if(result.screen_status){
+            $('.status').removeClass('start').addClass('stop');
+        }
+        else{
+            $('.status').removeClass('stop').addClass('start');
+        }
+    })
+});
+$('#save').on('click', function() {
+    var data = {
+        diffAmount: $('#diffAmount').val(), //差额
+        extecttime: $('#extecttime').val() //执行时间
+        //Accumulated: 0 //已累计值
+    }
+    if (window.confirm('确认执行？')) {
+        $.post('/saveconfig', data, function(result) {
+            if (result.status == 0) {
+                alert('设置成功！');
+            } else {
+                alert(result.message);
+            }
+        })
+    }
+    
+});
+
+$('#restart').on('click', function() {
+    if (window.confirm('确认是否重启？')) {
+        $.post('/restart', {
+            starttime: $('#starttime').val()
+        }, function(result) {
+
+        })
+    }
+});
+
+$.get('/getconfig', function(result) {
+    if (result.status == 0) {
+        //$('#coefficient').val(result.data.coefficient);
+        
+        if(result.screen_status){
+            $('.status').removeClass('start').addClass('stop');
+        }
+        else{
+            $('.status').removeClass('stop').addClass('start');
+        }
+
+        //倍率
+        $('#coefficient').trigger('blur');
+
+        $.get('/getstarttime', function(result) {
+            if (result.status == 0) {
+                $('#starttime').val(result.data);
+            } else {
+                alert(result.message)
+            }
+        })
+    } else {
+        alert(result.message)
+    }
+})
+</script>
+
+</html>

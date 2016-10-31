@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="./css/main.css">
+    <link rel="stylesheet" type="text/css" href="./css/tee.min.css">
+    <style type="text/css">
+    #daojishi {
+        position: relative;
+        top: -550px;
+        margin: auto;
+        text-align: center;
+        font-size: 150px;
+        color: #fff;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="content" style="position: relative;overflow: hidden;">
+        <video src="./video/shutterstock_v6412130.mov" style="height: 100%; width: 100%;" autoplay="autoplay" loop="loop"></video>
+        <img src="./img/title.png" style="
+            position: absolute;
+            top: 0px;left: -32px;
+        }" />
+        <div class="title"> <span class="datetime">2016-11-11 23:59:59</span></div>
+        <div class="panel-left">
+            <div>
+                <div class="line-4 line-left" style="height: 322px;"></div>
+                <div class="panel-title">
+                    商家TOP榜
+                    <div class="panel-title-sub">TOP LIST OF BUSINESSES</div>
+                </div>
+                <div style="height: 280px;position: relative;top: -27px;">
+                    <div class="line-1 line-top"></div>
+                    <div class="line-2 line-right"></div>
+                    <div class="line-3 line-bottom"></div>
+                    <div id="businesses"></div>
+                </div>
+            </div>
+            <div style="clear: both;position: relative; top: -5px;">
+                <div class="line-4 line-left" style="height: 322px;"></div>
+                <div class="panel-title">
+                    单价占比
+                    <div class="panel-title-sub">TOP LIST OF BUSINESSES</div>
+                </div>
+                <div style="height: 280px;position: relative;">
+                    <div class="line-1 line-top"></div>
+                    <div class="line-2 line-right"></div>
+                    <div class="line-3 line-bottom"></div>
+                    <div id="order-price"></div>
+                    <!-- <div id="order-price" style="width: 300px;height:300px;position: absolute; top: -30px">
+                    </div>
+                    <img src="./img/earth.png" style="position: absolute;
+                    left: 80px;
+                    top: 50px;
+                    width: 140px;" /> -->
+                </div>
+            </div>
+        </div>
+        <div class="panel-right">
+            <div>
+                <div class="line-4 line-right" style="height:322px;"></div>
+                <div style="text-align: right;" class="panel-title">
+                    类目TOP榜
+                    <div class="panel-title-sub">TOP LIST OF TYPE</div>
+                </div>
+                <div style="height: 280px;position: relative;top: -27px;">
+                    <div class="line-1 line-top"></div>
+                    <div class="line-2 line-left"></div>
+                    <div class="line-3 line-bottom"></div>
+                    <div id="businesses-type"></div>
+                </div>
+            </div>
+            <div style="clear: both;position: relative; top: -5px;">
+                <div class="line-4 line-right" style="height: 322px;"></div>
+                <div style="text-align: right;" class="panel-title">
+                    类目占比
+                    <div class="panel-title-sub">TOP LIST OF TYPE</div>
+                </div>
+                <div style="height: 280px;position: relative;">
+                    <div class="line-1 line-top"></div>
+                    <div class="line-2 line-left"></div>
+                    <div class="line-3 line-bottom"></div>
+                    <div id="type-ratio"></div>
+                </div>
+            </div>
+        </div>
+        <div class="content-body" style="opacity:0;">
+            <div id="amount"></div>
+            <!-- <button id="clear">clear</button> -->
+            <div id="test" style="position: absolute;
+            height: 500px;
+            overflow-y: auto;
+            z-index: 99999999;
+            padding-right: 20px;"></div>
+            <div id="chart2"></div>
+        </div>
+        <div class="back-img" style="height: 768px;
+            width: 1366px;
+            background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%,rgba(0,0,0,0.9) 70%,rgba(0,0,0,1) 100%); /* Chrome10-25,Safari5.1-6 */
+            position: absolute;
+            top: 800px;">
+            <img src="/img/moniter-bak14-small.png" style="position: absolute;bottom: 0px;">
+            <img id="bak-big" src="/img/moniter-bak15-big.png" style="position: absolute;bottom: 0px;">
+            <!-- <div class="order-point">
+            </div> -->
+        </div>
+        <div id="daojishi" style="">
+        </div>
+        <canvas id="can" width="1366px" height="330px" style="position: absolute;bottom: -530px;border: 0px solid red;"></canvas>
+    </div>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="./js/raphael.min.js"></script>
+<script src="./js/jquery.min.js"></script>
+<script src="./js/jquery-ui-widget.js"></script>
+<script src="./js/echarts.min.js"></script>
+<script src="./js/tee1.js?v=123"></script>
+<script src="./js/dark.js"></script>
+<script src="./js/tee-visual.js"></script>
+<script>
+var c = document.getElementById("can");
+var ctx = c.getContext("2d"); //获取canvas上下文
+var w = 1366;
+var h = 330; //设置canvas宽、高
+var clearColor = 'rgba(0, 0, 0, .1)'; //画板背景,注意最后的透明度0.1 这是产生叠加效果的基础
+var drops = [];
+$(function() {
+    var socket = io.connect('http://192.168.51.37:3030');
+    socket.on('restart', function(data) {
+        window.location.reload();
+    });
+    // socket.on('getdata', function(result) {
+
+    // });
+
+    var screen = new DataBigScreen({
+        datetimeElement: $('.datetime')
+    });
+    //总交易量
+    var money2 = $('#amount').money2().data('tee-money2');
+    //交易量、每小时交易订单分布图
+    var charts2 = $('#chart2').charts2({
+        unit_up: '万'
+    }).data('tee-charts2');
+    //商家top
+    var businesses = $('#businesses').list({
+        rows: 10,
+        front: 3,
+        column: [{
+            field: 'company_name',
+            classname: '',
+            unit: ''
+        }, {
+            field: 'order_amount',
+            classname: 'right',
+            unit: '万'
+        }, {
+            field: 'order_count',
+            classname: 'right',
+            unit: ''
+        }]
+    }).data('tee-list');
+    //类目top
+    var businesses_type = $('#businesses-type').list({
+        rows: 10,
+        front: 3,
+        column: [{
+            field: 'company_name',
+            classname: '',
+            unit: ''
+        }, {
+            field: 'order_amount',
+            classname: 'right',
+            unit: '%'
+        }]
+    }).data('tee-list');
+    //单价占比
+    var orderPriceRatio = $('#order-price').orderPriceRatio({
+        field: ['50', '50-100', '100-200', '200-500', '500', '移动端']
+    }).data('tee-orderPriceRatio');
+    //类目占比
+    var typeRatio = $('#type-ratio').ratiochart().data('tee-ratiochart');
+
+
+
+    var positionMap = {
+        '山东省': [800, 210],
+        '云南省': [640, 300],
+        '内蒙古自治区': [730, 180],
+        '北京市': [765, 185],
+        '台湾省': [860, 310],
+        '吉林省': [820, 165],
+        '四川省': [660, 260],
+        '天津市': [775, 192],
+        '宁夏回族自治区': [688, 221],
+        '安徽省': [803, 248],
+        '上海市': [848, 250],
+        '山西省': [738, 207],
+        '广东省': [775, 310],
+        '广西壮族自治区': [725, 308],
+        '新疆维吾尔自治区': [563, 183],
+        '江苏省': [825, 235],
+        '江西省': [797, 281],
+        '河北省': [763, 200],
+        '河南省': [760, 230],
+        '浙江省': [845, 265],
+        '海南省': [729, 325],
+        '湖北省': [755, 255],
+        '湖南省': [750, 280],
+        '澳门特别行政区': [753, 320],
+        '甘肃省': [673, 222],
+        '福建省': [824, 292],
+        '西藏自治区': [557, 247],
+        '贵州省': [699, 287],
+        '辽宁省': [805, 175],
+        '重庆市': [704, 265],
+        '陕西省': [714, 231],
+        '青海省': [609, 218],
+        '香港特别行政区': [781, 317],
+        '黑龙江省': [803, 147]
+    }
+
+    function getQueryString(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]);
+        return null;
+    }
+
+    function getData() {
+        if (!screen.showstatus) {
+            $.post('/getdata', {
+                date: getQueryString('date')
+            }, function(result) {
+                console.log(result);
+                money2.setData(result.amount_total);
+                businesses.setData(result.data1);
+                businesses_type.setData(result.data2);
+                charts2.setData(result.data3);
+                orderPriceRatio.setData(result.data4);
+                typeRatio.setData(result.data5);
+
+                //canvas
+                //
+
+                // ctx.save();
+
+
+                // ctx.fillStyle = 'rgba(235,133,42, 0.5)';
+                // // cxt.globalAlpha = 0.2;
+                // // cxt.globalCompositeOperation = 'lighter';
+                // ctx.shadowOffsetX = 0; // 阴影Y轴偏移
+                // ctx.shadowOffsetY = 0; // 阴影X轴偏移
+                // ctx.shadowBlur = 13; // 模糊尺寸
+                // ctx.shadowColor = 'rgba(235,133,42, 0.5)'; // 颜色
+                // ctx.clearRect(0,0,1366,330);
+                // for (var i = 0; i < result.data6.length; i++) {
+                //     for (var item in result.data6[i]) {
+                //         for (var k = 0; k < result.data6[i][item]; k++) {
+                //             ctx.beginPath();
+                //             dif_x = Math.random() * 10
+                //             dif_y = Math.random() * 10
+                //             ctx.arc(positionMap[item][0], positionMap[item][1], 3, 0, Math.PI * 2, false);
+                //             ctx.fill();
+                //         }
+                //     }
+                // }
+
+
+
+
+                drops = [];
+                for (var i = 0; i < result.data6.length; i++) {
+                    for (var item in result.data6[i]) {
+                        //for (var k = 0; k < result.data6[i][item]; k++) {
+                        if (result.data6[i][item] > 0) {
+                            console.log(item)
+                            var r = new Rippling();
+                            r.init(positionMap[item][0], positionMap[item][1]);
+                            drops.push(r);
+                        }
+                        //}
+                    }
+                }
+
+            })
+        }
+    }
+
+    getData();
+    // setInterval(function() {
+    //     getData();
+    // }, 10000);
+
+    function anim() {
+        ctx.fillStyle = clearColor;
+        ctx.clearRect(0, 0, 1366, 330);
+        ctx.fillRect(0, 0, w, h);
+        for (var i = 0; i < drops.length; i++) {
+            drops[i].draw();
+        }
+        requestAnimationFrame(anim);
+    }
+
+    //启动动画
+    anim();
+
+
+    var regex = new RegExp("([0-9]{3,3})\\-([0-9]{3,3})\\-([0-9]{4,4})", "g");
+    var testString = "123456789"; // fill this in
+    var match;
+    while ((match = regex.exec(testString)) != null) {
+        // javascript RegExp has a bug when the match has length 0
+        if (match.index === regex.lastIndex) {
+            ++regex.lastIndex;
+        }
+        // the match variable is an array that contains the matching groups
+    }
+})
+
+function Rippling() {}
+//涟漪对象 这是涟漪动画的主要部分
+Rippling.prototype = {
+    init: function(x, y) {
+        this.x = x; //涟漪x坐标
+        this.y = y; //涟漪y坐标
+        this.w = 1; //椭圆形涟漪宽
+        this.h = 1; //椭圆涟漪高
+        this.vw = 0.03; //宽度增长速度
+        this.vh = 0.02; //高度增长速度
+        this.a = 1; //透明度
+        this.va = .98; //涟漪消失的渐变速度
+    },
+    draw: function() {
+        ctx.beginPath();
+        ctx.moveTo(this.x, this.y - this.h / 2);
+        //绘制右弧线
+        ctx.bezierCurveTo(
+            this.x + this.w / 2, this.y - this.h / 2,
+            this.x + this.w / 2, this.y + this.h / 2,
+            this.x, this.y + this.h / 2);
+        //绘制左弧线
+        ctx.bezierCurveTo(
+            this.x - this.w / 2, this.y + this.h / 2,
+            this.x - this.w / 2, this.y - this.h / 2,
+            this.x, this.y - this.h / 2);
+
+        ctx.strokeStyle = 'hsla(180, 100%, 50%, ' + this.a + ')';
+        //ctx.fillStyle = '#ff0000';
+        ctx.fillStyle = 'hsla(180, 100%, 50%, ' + this.a + ')';
+        ctx.stroke();
+        ctx.fill();
+        ctx.closePath();
+        this.update(); //更新坐标
+    },
+    update: function() {
+        if (this.a > .01) {
+            this.w += this.vw; //宽度增长
+            this.h += this.vh; //高度增长
+            if (this.w > 8) {
+                this.a *= this.va; //当宽度超过100，涟漪逐渐变淡消失
+                this.vw *= .98; //宽度增长变缓慢
+                this.vh *= .98; //高度增长变缓慢
+            }
+        } else {
+            this.init();
+        }
+
+    }
+};
+</script>
+
+</html>
