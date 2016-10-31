@@ -232,7 +232,7 @@ app.post('/getdata', function(req, res) {
                     if (data.extecttime > 0) {
                         diffvalue = Math.round(data.diffAmount / data.extecttime);
                         redis.hmset('config', {
-                            'Accumulated': parseFloat(data.Accumulated) + diffvalue, //累计值
+                            'Accumulated': parseFloat(isNaN(data.Accumulated) ? 0 : data.Accumulated) + diffvalue, //累计值
                             'diffAmount': data.diffAmount - diffvalue, //差额
                             'extecttime': data.extecttime - 1, //执行时间
                             'new_amount_total': (amount_total + diffvalue).toFixed(0) //加上累计值的总交易金额
