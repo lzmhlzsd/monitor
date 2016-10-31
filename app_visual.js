@@ -274,6 +274,7 @@ app.post('/getdata', function(req, res) {
                 console.log(new Date(years+ '-' + months + '-' + dates).getTime())
                 console.log(new Date(req.body.date).getTime())
                 console.log('today:' + today)
+                console.log('hours:' + date.getHours())
                 var orderNumAndAmountByHour = [];
                 for (var i = 0; i < result.amount_step.length; i++) {
                     if(today && i > date.getHours()){
