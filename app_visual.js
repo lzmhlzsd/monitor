@@ -282,20 +282,21 @@ app.post('/getdata', function(req, res) {
                     }
                     orderNumAndAmountByHour.push({
                         item: i,
-                        count: result.amount_step[i] + result2.amount_step[i]
+                        count: parseFloat((result.amount_step[i] + result2.amount_step[i]).toFixed(2))
                     })
                     
                 }
 
-                //console.log(orderNumAndAmountByHour)
+                
                 var tempamout = 0;
                 for (var j = 0; j < result.amount_step.length; j++) {
                     tempamout += result.amount_step[j] + result2.amount_step[j];
                     if(today && j > date.getHours()){
                         break;
                     }
-                    orderNumAndAmountByHour[j]['amount'] = tempamout;
+                    orderNumAndAmountByHour[j]['amount'] = parseFloat(tempamout.toFixed(2));
                 }
+                console.log(orderNumAndAmountByHour)
                 //类目TOP
                 var CatList = [];
                 var CatListSUM = 0;
