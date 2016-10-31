@@ -236,7 +236,7 @@ $(function() {
             $.post('/getdata', {
                 date: getQueryString('date')
             }, function(result) {
-                console.log(result);
+                //console.log(result);
                 money2.setData(result.amount_total);
                 businesses.setData(result.data1);
                 businesses_type.setData(result.data2);
@@ -278,7 +278,7 @@ $(function() {
                     for (var item in result.data6[i]) {
                         //for (var k = 0; k < result.data6[i][item]; k++) {
                         if (result.data6[i][item] > 0) {
-                            console.log(item)
+                            //console.log(item)
                             var r = new Rippling();
                             r.init(positionMap[item][0], positionMap[item][1]);
                             drops.push(r);

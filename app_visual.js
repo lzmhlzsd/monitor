@@ -334,7 +334,7 @@ app.post('/getdata', function(req, res) {
                 //console.log(CatList)
                 for(var i=0;i< 10; i++){
                     newCatList.push(CatList[i]);
-                    console.log('i: ' + i);
+                    //console.log('i: ' + i);
                     //console.log(CatList[i]);
                     tempamount += CatList[i].order_amount;
                 }
