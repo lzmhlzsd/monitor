@@ -129,7 +129,7 @@ var h = 330; //设置canvas宽、高
 var clearColor = 'rgba(0, 0, 0, .1)'; //画板背景,注意最后的透明度0.1 这是产生叠加效果的基础
 var drops = [];
 $(function() {
-    var socket = io.connect('http://192.168.51.37:3030');
+    var socket = io.connect('http://192.168.10.198:3030');
     socket.on('restart', function(data) {
         window.location.reload();
     });
